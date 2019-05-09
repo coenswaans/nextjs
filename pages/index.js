@@ -1,17 +1,28 @@
-import Link from "next/link";
-import Header from "../components/header";
+import 'isomorphic-fetch'
+import React from 'react'
+import { connect } from 'react-redux'
 
-function Index() {
-  return (
-    <main>
-      <Header />
-      <section>
-        <Link href="/about">
-          <a>Go to About Me</a>
-        </Link>
-      </section>
-    </main>
-  );
+import Fork from '../components/Fork'
+import Todo from '../components/Todo'
+
+// Port in to using useState hooks, if you need state
+const Index = ({ stars }) => (
+	<div>
+		<Fork stars={stars} />
+		<div>
+			<Todo />
+		</div>
+	</div>
+)
+
+Index.getInitialProps = async({ store }) => {
+	// Adding a default/initialState can be done as follows:
+	// store.dispatch({ type: 'ADD_TODO', text: 'It works!' });
+	const res = await fetch(
+		'https://api.github.com/repos/ooade/NextSimpleStarter'
+	)
+	const json = await res.json()
+	return { stars: json.stargazers_count }
 }
 
-export default Index;
+export default connect()(Index)
